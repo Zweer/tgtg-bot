@@ -25,6 +25,9 @@ jobs:
 
       - name: Run tests
         run: yarn test
+        env:
+          TOOGOODTOGO_EMAIL: ${{ secrets.TOOGOODTOGO_EMAIL }}
+          TOOGOODTOGO_PASSWORD: ${{ secrets.TOOGOODTOGO_PASSWORD }}
 
   lint:
     runs-on: ubuntu-latest
