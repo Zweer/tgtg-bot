@@ -37,8 +37,8 @@ export class Item {
     item.priceCode = rawItem.item.price_including_taxes.code;
     item.value = rawItem.item.value_including_taxes.minor_units / Math.pow(10, rawItem.item.value_including_taxes.decimals);
 
-    item.pickupStart = rawItem.pickup_interval.start;
-    item.pickupEnd = rawItem.pickup_interval.end;
+    item.pickupStart = rawItem.pickup_interval?.start;
+    item.pickupEnd = rawItem.pickup_interval?.end;
 
     item.itemsAvailable = rawItem.items_available;
 
