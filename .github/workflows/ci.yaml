@@ -54,6 +54,9 @@ jobs:
       - lint
     runs-on: ubuntu-latest
     steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
       - name: Send message to Telegram
         uses: Lukasss93/telegram-action@v1
         env:
