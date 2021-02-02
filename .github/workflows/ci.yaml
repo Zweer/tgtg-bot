@@ -29,29 +29,11 @@ jobs:
           TOOGOODTOGO_EMAIL: ${{ secrets.TOOGOODTOGO_EMAIL }}
           TOOGOODTOGO_PASSWORD: ${{ secrets.TOOGOODTOGO_PASSWORD }}
 
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Setup node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - name: Setup dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Run linter
-        run: yarn lint
-
   notify:
     name: Notify via Telegram
     if: always()
     needs:
       - test
-      - lint
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
