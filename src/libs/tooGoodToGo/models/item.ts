@@ -2,7 +2,9 @@ import { ListItemsResponseDto } from '@libs/tooGoodToGo/dtos/item/listItems.resp
 
 export class Item {
   id: string;
+
   name: string;
+
   store: {
     id: string;
     name: string;
@@ -10,13 +12,21 @@ export class Item {
     latitude: number;
     longitude: number,
   };
+
   price: number;
+
   priceCode: string;
+
   value: number;
+
   pickupStart: string;
+
   pickupEnd: string;
+
   itemsAvailable: number;
+
   image: string;
+
   logo: string;
 
   static factory(rawItem: ListItemsResponseDto['items'][number]): Item {
@@ -33,9 +43,9 @@ export class Item {
       longitude: rawItem.store.store_location.location.longitude,
     };
 
-    item.price = rawItem.item.price_including_taxes.minor_units / Math.pow(10, rawItem.item.price_including_taxes.decimals);
+    item.price = rawItem.item.price_including_taxes.minor_units / 10 ** rawItem.item.price_including_taxes.decimals;
     item.priceCode = rawItem.item.price_including_taxes.code;
-    item.value = rawItem.item.value_including_taxes.minor_units / Math.pow(10, rawItem.item.value_including_taxes.decimals);
+    item.value = rawItem.item.value_including_taxes.minor_units / 10 ** rawItem.item.value_including_taxes.decimals;
 
     item.pickupStart = rawItem.pickup_interval?.start;
     item.pickupEnd = rawItem.pickup_interval?.end;

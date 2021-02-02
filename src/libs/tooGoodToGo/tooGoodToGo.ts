@@ -11,11 +11,15 @@ type Endpoints = 'loginByEmail' | 'listItems';
 
 export class TooGoodToGo {
   private token: string;
+
   private userId: string;
+
   private latitude: number;
+
   private longitude: number;
 
   private static BASEURL = 'https://apptoogoodtogo.com';
+
   private static ENDPOINTS: { [key in Endpoints]: string } = {
     loginByEmail: 'api/auth/v2/loginByEmail',
     listItems: 'api/item/v7/',
@@ -55,6 +59,7 @@ export class TooGoodToGo {
     const items = [];
 
     for (let page = 1, moreItems = true; moreItems; page += 1) {
+      // eslint-disable-next-line no-await-in-loop
       const partialItems = await this.send<ListItemsResponseDto, ListItemsRequestDto>('listItems', {
         user_id: this.userId,
         origin: { latitude: this.latitude, longitude: this.longitude },
@@ -80,6 +85,6 @@ export class TooGoodToGo {
       }
     }
 
-    return items.map(item => Item.factory(item));
+    return items.map((item) => Item.factory(item));
   }
 }
