@@ -15,6 +15,9 @@ const serverlessConfiguration: AWS = {
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
+    // eslint-disable-next-line no-template-curly-in-string
+    stage: '${opt:stage, "dev"}',
+    region: 'eu-west-1',
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,

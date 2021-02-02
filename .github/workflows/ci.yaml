@@ -28,3 +28,25 @@ jobs:
         env:
           TOOGOODTOGO_EMAIL: ${{ secrets.TOOGOODTOGO_EMAIL }}
           TOOGOODTOGO_PASSWORD: ${{ secrets.TOOGOODTOGO_PASSWORD }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Setup node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Setup dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Deploy
+        run: yarn sls deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
