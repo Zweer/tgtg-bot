@@ -28,21 +28,3 @@ jobs:
         env:
           TOOGOODTOGO_EMAIL: ${{ secrets.TOOGOODTOGO_EMAIL }}
           TOOGOODTOGO_PASSWORD: ${{ secrets.TOOGOODTOGO_PASSWORD }}
-
-  notify:
-    name: Notify via Telegram
-    if: always()
-    needs:
-      - test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v2
-
-      - name: Send message to Telegram
-        uses: Lukasss93/telegram-action@v1
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT: ${{ secrets.TELEGRAM_CHAT }}
-        with:
-          STATUS: ${{ job.status }}
