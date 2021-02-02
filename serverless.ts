@@ -28,6 +28,13 @@ const serverlessConfiguration: AWS = {
     lambdaHashingVersion: '20201221',
   },
   functions: { bot, botSetWebhook },
+  outputs: {
+    ServiceEndpoint: {
+      Export: {
+        Name: 'API-Endpoint',
+      },
+    },
+  },
 };
 
 module.exports = serverlessConfiguration;
