@@ -10,8 +10,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@middy/core": "^1.5.0",
-    "@middy/http-json-body-parser": "^1.5.0",
     "axios": "^0.21.1",
     "lambda-request-handler": "^0.5.1-alpha1",
     "source-map-support": "^0.5.19",
