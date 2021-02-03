@@ -31,6 +31,7 @@ export class TooGoodToGo {
     const { data } = await axios.post(`${TooGoodToGo.BASEURL}/${TooGoodToGo.ENDPOINTS[endpoint]}`, body, {
       headers: {
         Authorization: this.token ? `Bearer ${this.token}` : '',
+        'User-Agent': 'TGTG/20.10.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/M4B30Z)',
       },
     });
 
