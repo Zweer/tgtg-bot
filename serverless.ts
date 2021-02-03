@@ -3,7 +3,7 @@ import type { AWS } from '@serverless/typescript';
 import { bot, botSetWebhook } from './src/functions';
 
 const serverlessConfiguration: AWS = {
-  service: 'tgtg-bot',
+  service: 'tgtg',
   frameworkVersion: '2',
   custom: {
     webpack: {
