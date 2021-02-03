@@ -4,4 +4,6 @@ import { bot } from '../common/bot';
 
 bot.start((ctx) => ctx.reply('Hello'));
 
-export const main = makeHandler(bot.webhookCallback('/'));
+console.log(process.env);
+
+export const main = makeHandler(bot.webhookCallback('/dev/telegram'));
