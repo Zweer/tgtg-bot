@@ -1,22 +1,15 @@
-import * as makeHandler from 'lambda-request-handler';
+import 'source-map-support/register';
 
-import { bot } from '../common/bot';
+import { bot } from '@common/bot';
+import { formatJSONResponse } from '@libs/apiGateway';
+import { middyfy } from '@libs/lambda';
 
 bot.start((ctx) => ctx.reply('Hello'));
 
-export const mainn = makeHandler(bot.webhookCallback('/dev/telegram'));
+const handleUpdate = async (event) => {
+  const success = await bot.handleUpdate(event.body);
 
-export const main = async (event) => {
-  console.log(event);
-
-  const body = JSON.parse(event.body);
-
-  console.log(body);
-
-  const success = await bot.handleUpdate(body);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ success }),
-  };
+  return formatJSONResponse({ success });
 };
+
+export const main = middyfy(handleUpdate);

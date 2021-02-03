@@ -1,4 +1,4 @@
-import { bot } from '../common/bot';
+import { bot } from '@common/bot';
 
 const { API_URL } = process.env;
 
