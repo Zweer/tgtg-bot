@@ -6,6 +6,7 @@ const slsFunction: AWS['functions'][string] = {
     http: {
       method: 'post',
       path: 'telegram',
+      operationId: 'botHandler',
     },
   }],
 };

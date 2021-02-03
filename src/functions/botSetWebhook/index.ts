@@ -9,7 +9,7 @@ const slsFunction: AWS['functions'][string] = {
         [
           'https://',
           {
-            Ref: 'bot',
+            Ref: 'ApiGatewayRestApi',
           },
           '.execute-api.',
           {
