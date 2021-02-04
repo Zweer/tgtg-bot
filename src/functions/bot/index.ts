@@ -13,7 +13,11 @@ const slsFunction: AWS['functions'][string] = {
       operationId: 'botHandler',
     },
   }],
-  environment: { TELEGRAM_TOKEN },
+  environment: {
+    // eslint-disable-next-line no-template-curly-in-string
+    DYNAMODB_TABLE_TELEGRAF_SESSIONS: '${self:custom.resourceNames.tables.telegrafSessions}',
+    TELEGRAM_TOKEN,
+  },
 };
 
 export default slsFunction;
