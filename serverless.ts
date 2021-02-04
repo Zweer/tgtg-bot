@@ -52,7 +52,7 @@ const serverlessConfiguration: AWS = {
         Type: 'AWS::DynamoDB::Table',
         Properties: {
           TableName: '${self:custom.resourceNames.tables.telegrafSessions}',
-          AttributeDefinition: [{
+          AttributeDefinitions: [{
             AttributeName: 'SessionKey',
             AttributeType: 'S',
           }],
