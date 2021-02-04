@@ -11,7 +11,7 @@ import { startSceneId, startStage } from './routes/start';
 const dynamoDBSession = new DynamoDBSession({
   dynamoDBConfig: {
     params: {
-      TableName: process.env.DYNAMODB_TABLE_TELEGRAF_SESSION,
+      TableName: process.env.DYNAMODB_TABLE_TELEGRAF_SESSIONS,
     },
     region: process.env.AWS_REGION,
   },
