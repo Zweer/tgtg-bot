@@ -16,6 +16,8 @@ const slsFunction: AWS['functions'][string] = {
   environment: {
     // eslint-disable-next-line no-template-curly-in-string
     DYNAMODB_TABLE_TELEGRAF_SESSIONS: '${self:custom.resourceNames.tables.telegrafSessions}',
+    // eslint-disable-next-line no-template-curly-in-string
+    DYNAMODB_TABLE_USERS: '${self:custom.resourceNames.tables.users}',
     TELEGRAM_TOKEN,
   },
 };

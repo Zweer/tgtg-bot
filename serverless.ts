@@ -15,6 +15,7 @@ const serverlessConfiguration: AWS = {
     resourceNames: {
       tables: {
         telegrafSessions: '${self:service}-${self:provider.stage}-telegrafSessions',
+        users: '${self:service}-${self:provider.stage}-users',
       },
     },
   },
@@ -40,9 +41,11 @@ const serverlessConfiguration: AWS = {
         'dynamodb:PutItem',
         'dynamodb:UpdateItem',
       ],
-      Resource: {
+      Resource: [{
         'Fn::GetAtt': ['TelegrafSessionsTable', 'Arn'],
-      },
+      }, {
+        'Fn::GetAtt': ['UsersTable', 'Arn'],
+      }],
     }],
   },
   functions: { bot, botSetWebhook },
@@ -58,6 +61,24 @@ const serverlessConfiguration: AWS = {
           }],
           KeySchema: [{
             AttributeName: 'SessionKey',
+            KeyType: 'HASH',
+          }],
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1,
+          },
+        },
+      },
+      UsersTable: {
+        Type: 'AWS::DynamoDB::Table',
+        Properties: {
+          TableName: '${self:custom.resourceNames.tables.users}',
+          AttributeDefinitions: [{
+            AttributeName: 'id',
+            AttributeType: 'S',
+          }],
+          KeySchema: [{
+            AttributeName: 'id',
             KeyType: 'HASH',
           }],
           ProvisionedThroughput: {
