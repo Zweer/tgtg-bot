@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@common/*": ["src/common/*"],
-      "@libs/*": ["src/libs/*"]
+      "@libs/*": ["src/libs/*"],
+      "@models/*": ["src/models/*"]
     }
   }
 }

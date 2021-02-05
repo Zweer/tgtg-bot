@@ -1,7 +1,7 @@
 import { Composer, Scenes } from 'telegraf';
 import { ItemNotFoundException } from '@aws/dynamodb-data-mapper';
 
-import { User } from '../../../models/user';
+import { User } from '@models/user';
 
 interface StartWizardSession extends Scenes.WizardSessionData {
   email: string;
@@ -15,18 +15,18 @@ export const startSceneId = 'start-wizard';
 const startWizard = new Scenes.WizardScene<StartWizardContext>(
   startSceneId,
   async (ctx) => {
-    try {
-      const user = await User.get({ id: `${ctx.message.chat.id}` });
+    const user = await User.get({ id: `${ctx.message.chat.id}` })
+      .catch((error: ItemNotFoundException) => {
+        console.error(error);
+        console.log(error.name);
 
-      if (user) {
-        await ctx.reply('User already exists');
+        return null;
+      });
 
-        return ctx.scene.leave();
-      }
-    } catch (error) {
-      if (!(error instanceof ItemNotFoundException)) {
-        throw error;
-      }
+    if (user) {
+      await ctx.reply('User already exists');
+
+      return ctx.scene.leave();
     }
 
     ctx.scene.session.email = '';
