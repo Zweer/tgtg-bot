@@ -7,7 +7,7 @@ const mapper = new DataMapper({ client });
 
 export class AbstractModel {
   static async get<T>(item: T, options?: GetOptions): Promise<T> {
-    return mapper.get<T>(item, options);
+    return mapper.get<T>(Object.assign(new this(), item), options);
   }
 
   async put<T>(options?: PutOptions) {
