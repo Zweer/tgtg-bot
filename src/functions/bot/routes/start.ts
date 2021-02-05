@@ -13,6 +13,7 @@ export const startSceneId = 'start-wizard';
 const startWizard = new Scenes.WizardScene<StartWizardContext>(
   startSceneId,
   async (ctx) => {
+    console.log({ id: ctx.message.chat.id });
     const user = await User.get({ id: ctx.message.chat.id });
 
     if (user) {
