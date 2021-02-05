@@ -13,7 +13,7 @@ export const startSceneId = 'start-wizard';
 const startWizard = new Scenes.WizardScene<StartWizardContext>(
   startSceneId,
   async (ctx) => {
-    const user = await User.get({ item: { id: ctx.message.chat.id } });
+    const user = await User.get({ id: ctx.message.chat.id });
 
     if (user) {
       await ctx.reply('User already exists');
