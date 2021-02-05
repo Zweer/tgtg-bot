@@ -23,6 +23,8 @@ const startWizard = new Scenes.WizardScene<StartWizardContext>(
         return null;
       });
 
+    console.log(user);
+
     if (user) {
       await ctx.reply('User already exists');
 
