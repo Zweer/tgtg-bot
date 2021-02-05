@@ -2,6 +2,7 @@ import { Composer, Scenes } from 'telegraf';
 import { ItemNotFoundException } from '@aws/dynamodb-data-mapper';
 
 import { User } from '@models/user';
+import { TooGoodToGo } from '@libs/tooGoodToGo';
 
 interface StartWizardSession extends Scenes.WizardSessionData {
   email: string;
@@ -22,8 +23,6 @@ const startWizard = new Scenes.WizardScene<StartWizardContext>(
 
         return null;
       });
-
-    console.log(user);
 
     if (user) {
       await ctx.reply('User already exists');
@@ -50,9 +49,14 @@ const startWizard = new Scenes.WizardScene<StartWizardContext>(
       const { email } = ctx.scene.session;
       const password = ctx.message.text;
 
+      const tooGoodToGo = new TooGoodToGo(email, password);
+      await tooGoodToGo.login();
+
       const user = Object.assign(new User(), {
         id: ctx.message.chat.id,
         email,
+        accessToken: tooGoodToGo.token,
+        refreshToken: tooGoodToGo.refreshToken,
       });
       await user.put();
 

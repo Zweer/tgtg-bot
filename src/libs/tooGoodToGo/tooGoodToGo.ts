@@ -10,7 +10,9 @@ import { Item } from '@libs/tooGoodToGo/models/item';
 type Endpoints = 'loginByEmail' | 'listItems';
 
 export class TooGoodToGo {
-  private token: string;
+  token: string;
+
+  refreshToken: string;
 
   private userId: string;
 
@@ -38,7 +40,7 @@ export class TooGoodToGo {
     return data;
   }
 
-  private async login(): Promise<void> {
+  async login(): Promise<void> {
     if (this.token) {
       return;
     }
@@ -50,6 +52,7 @@ export class TooGoodToGo {
     });
 
     this.token = data.access_token;
+    this.refreshToken = data.refresh_token;
     this.userId = data.startup_data.user.user_id;
     this.latitude = (data.startup_data.user_settings.bound_ne.latitude + data.startup_data.user_settings.bound_sw.latitude) / 2;
     this.longitude = (data.startup_data.user_settings.bound_ne.longitude + data.startup_data.user_settings.bound_sw.longitude) / 2;
