@@ -26,5 +26,5 @@ export const listHandler = async (ctx: Context) => {
   ]
     .flat();
 
-  await ctx.reply(messages.join('\n'));
+  await ctx.replyWithMarkdown(messages.join('\n'));
 };
