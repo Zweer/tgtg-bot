@@ -24,6 +24,9 @@ export class User extends AbstractModel {
   @attribute()
   refreshToken: string;
 
+  @attribute()
+  remind: boolean;
+
   tooGoodToGo: TooGoodToGo;
 
   userInfo: RetrieveUserResponseDto;

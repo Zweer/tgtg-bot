@@ -7,6 +7,7 @@ import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 
 import { listAction, listHandler } from './routes/list';
+import { remindAction, remindHandler } from './routes/remind';
 import { startSceneId, startStage } from './routes/start';
 
 const dynamoDBSession = new DynamoDBSession({
@@ -24,6 +25,8 @@ bot.use(startStage.middleware());
 bot.start((ctx) => ctx.scene.enter(startSceneId));
 bot.action(listAction, listHandler);
 bot.command(listAction, listHandler);
+bot.action(remindAction, remindHandler);
+bot.command(remindAction, remindHandler);
 
 const handleUpdate = async (event) => {
   const success = await bot.handleUpdate(event.body);
