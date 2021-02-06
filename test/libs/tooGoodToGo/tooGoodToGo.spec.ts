@@ -6,8 +6,9 @@ describe('Too Good To Go', () => {
 
   let tooGoodToGo: TooGoodToGo;
 
-  beforeEach(() => {
-    tooGoodToGo = new TooGoodToGo(email, password);
+  beforeEach(async () => {
+    tooGoodToGo = new TooGoodToGo();
+    await tooGoodToGo.login(email, password);
   });
 
   test('List Items', async () => {
