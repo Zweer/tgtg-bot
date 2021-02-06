@@ -2,7 +2,6 @@ import { Composer, Scenes } from 'telegraf';
 import { ItemNotFoundException } from '@aws/dynamodb-data-mapper';
 
 import { User } from '@models/user';
-import { TooGoodToGo } from '@libs/tooGoodToGo';
 
 interface StartWizardSession extends Scenes.WizardSessionData {
   email: string;
@@ -16,7 +15,7 @@ export const startSceneId = 'start-wizard';
 const startWizard = new Scenes.WizardScene<StartWizardContext>(
   startSceneId,
   async (ctx) => {
-    const user = await User.get({ id: `${ctx.message.chat.id}` })
+    const user: User = await User.get({ id: `${ctx.message.chat.id}` })
       .catch((error: ItemNotFoundException) => {
         console.error(error);
         console.log(error.name);
@@ -24,10 +23,16 @@ const startWizard = new Scenes.WizardScene<StartWizardContext>(
         return null;
       });
 
-    if (user) {
-      await ctx.reply('User already exists');
+    if (user && user.accessToken && user.refreshToken) {
+      try {
+        const { user: userInfo } = await user.setTooGoodToGo();
 
-      return ctx.scene.leave();
+        await ctx.reply(`Welcome back ${userInfo.name}`);
+
+        return await ctx.scene.leave();
+      } catch {
+        // login expired
+      }
     }
 
     ctx.scene.session.email = '';
@@ -49,20 +54,21 @@ const startWizard = new Scenes.WizardScene<StartWizardContext>(
       const { email } = ctx.scene.session;
       const password = ctx.message.text;
 
-      const tooGoodToGo = new TooGoodToGo(email, password);
-      await tooGoodToGo.login();
-
       const user = Object.assign(new User(), {
         id: ctx.message.chat.id,
-        email,
-        accessToken: tooGoodToGo.token,
-        refreshToken: tooGoodToGo.refreshToken,
       });
-      await user.put();
 
-      await ctx.reply(`Email: ${email}\nPassword: ${password}`);
+      try {
+        const { user: userInfo } = await user.createTooGoodToGo(email, password);
+        await user.put();
 
-      return ctx.scene.leave();
+        await ctx.reply(`Welcome ${userInfo.name}`);
+      } catch {
+        await ctx.reply('Invalid credentials!');
+      }
+
+      // eslint-disable-next-line no-return-await
+      return await ctx.scene.leave();
     }),
 );
 

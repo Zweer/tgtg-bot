@@ -6,11 +6,15 @@ import { ListItemsResponseDto } from '@libs/tooGoodToGo/dtos/item/listItems.resp
 import { ListItemsRequestDto } from '@libs/tooGoodToGo/dtos/item/listItems.request.dto';
 
 import { Item } from '@libs/tooGoodToGo/models/item';
+import { RefreshTokenResponseDto } from '@libs/tooGoodToGo/dtos/auth/refreshToken.response.dto';
+import { RefreshTokenRequestDto } from '@libs/tooGoodToGo/dtos/auth/refreshToken.request.dto';
+import { RetrieveUserSettingsResponseDto } from '@libs/tooGoodToGo/dtos/user/retrieveUserSettings.response.dto';
+import { RetrieveUserResponseDto } from '@libs/tooGoodToGo/dtos/user/retrieveUser.response.dto';
 
-type Endpoints = 'loginByEmail' | 'listItems';
+type Endpoints = 'loginByEmail' | 'listItems' | 'retrieveUser' | 'retrieveUserSettings' | 'refreshToken';
 
 export class TooGoodToGo {
-  token: string;
+  accessToken: string;
 
   refreshToken: string;
 
@@ -25,41 +29,59 @@ export class TooGoodToGo {
   private static ENDPOINTS: { [key in Endpoints]: string } = {
     loginByEmail: 'api/auth/v2/loginByEmail',
     listItems: 'api/item/v7/',
+    retrieveUser: 'api/user/v1/',
+    retrieveUserSettings: 'api/app/v1/user_settings',
+    refreshToken: 'api/auth/v2/token/refresh',
   };
 
-  constructor(private email: string, private password: string) {}
-
-  private async send<T, U = {}>(endpoint: Endpoints, body: U): Promise<T> {
+  private async send<T, U = null>(endpoint: Endpoints, body: U = null): Promise<T> {
     const { data } = await axios.post(`${TooGoodToGo.BASEURL}/${TooGoodToGo.ENDPOINTS[endpoint]}`, body, {
       headers: {
-        Authorization: this.token ? `Bearer ${this.token}` : '',
-        'User-Agent': 'TGTG/20.10.2 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/M4B30Z)',
+        Authorization: this.accessToken ? `Bearer ${this.accessToken}` : '',
+        'User-Agent': 'TGTG/20.12.3 Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/M4B30Z)',
       },
     });
 
     return data;
   }
 
-  async login(): Promise<void> {
-    if (this.token) {
-      return;
-    }
-
+  async login(email: string, password: string): Promise<{ user: RetrieveUserResponseDto, userSettings: RetrieveUserSettingsResponseDto }> {
     const data = await this.send<LoginByEmailResponseDto, LoginByEmailRequestDto>('loginByEmail', {
-      email: this.email,
-      password: this.password,
+      email,
+      password,
       device_type: 'ANDROID',
     });
 
-    this.token = data.access_token;
+    this.accessToken = data.access_token;
     this.refreshToken = data.refresh_token;
-    this.userId = data.startup_data.user.user_id;
-    this.latitude = (data.startup_data.user_settings.bound_ne.latitude + data.startup_data.user_settings.bound_sw.latitude) / 2;
-    this.longitude = (data.startup_data.user_settings.bound_ne.longitude + data.startup_data.user_settings.bound_sw.longitude) / 2;
+    this.setUserProperties(data.startup_data.user);
+    this.setUserSettingsProperties(data.startup_data.user_settings);
+
+    return {
+      user: data.startup_data.user,
+      userSettings: data.startup_data.user_settings,
+    };
+  }
+
+  private setUserProperties(user: RetrieveUserResponseDto): void {
+    this.userId = user.user_id;
+  }
+
+  private setUserSettingsProperties(userSettings: RetrieveUserSettingsResponseDto): void {
+    this.latitude = (userSettings.bound_ne.latitude + userSettings.bound_sw.latitude) / 2;
+    this.longitude = (userSettings.bound_ne.longitude + userSettings.bound_sw.longitude) / 2;
+  }
+
+  async refreshAccessToken(): Promise<void> {
+    const data = await this.send<RefreshTokenResponseDto, RefreshTokenRequestDto>('refreshToken', {
+      refresh_token: this.refreshToken,
+    });
+
+    this.accessToken = data.access_token;
+    this.refreshToken = data.refresh_token;
   }
 
   async listItems(): Promise<Item[]> {
-    await this.login();
     const items = [];
 
     for (let page = 1, moreItems = true; moreItems; page += 1) {
@@ -90,5 +112,21 @@ export class TooGoodToGo {
     }
 
     return items.map((item) => Item.factory(item));
+  }
+
+  async retrieveUser(): Promise<RetrieveUserResponseDto> {
+    const data = await this.send<RetrieveUserResponseDto>('retrieveUser');
+
+    this.setUserProperties(data);
+
+    return data;
+  }
+
+  async retrieveUserSettings(): Promise<RetrieveUserSettingsResponseDto> {
+    const data = await this.send<RetrieveUserSettingsResponseDto>('retrieveUserSettings');
+
+    this.setUserSettingsProperties(data);
+
+    return data;
   }
 }
