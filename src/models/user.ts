@@ -26,7 +26,11 @@ export class User extends AbstractModel {
 
   tooGoodToGo: TooGoodToGo;
 
-  async createTooGoodToGo(email: string, password: string): Promise<{ user: RetrieveUserResponseDto, userSettings: RetrieveUserSettingsResponseDto }> {
+  userInfo: RetrieveUserResponseDto;
+
+  userSettings: RetrieveUserSettingsResponseDto;
+
+  async createTooGoodToGo(email: string, password: string): Promise<void> {
     this.email = email;
     this.tooGoodToGo = new TooGoodToGo();
 
@@ -35,19 +39,54 @@ export class User extends AbstractModel {
     this.accessToken = this.tooGoodToGo.accessToken;
     this.refreshToken = this.tooGoodToGo.refreshToken;
 
-    return data;
+    this.userInfo = data.user;
+    this.userSettings = data.userSettings;
   }
 
-  async setTooGoodToGo(): Promise<{ user: RetrieveUserResponseDto, userSettings: RetrieveUserSettingsResponseDto }> {
+  async setTooGoodToGo(): Promise<void> {
     this.tooGoodToGo = Object.assign(new TooGoodToGo(), {
       accessToken: this.accessToken,
       refreshToken: this.refreshToken,
     });
 
     await this.tooGoodToGo.refreshAccessToken();
-    const user = await this.tooGoodToGo.retrieveUser();
-    const userSettings = await this.tooGoodToGo.retrieveUserSettings();
+    this.userInfo = await this.tooGoodToGo.retrieveUser();
+    this.userSettings = await this.tooGoodToGo.retrieveUserSettings();
+  }
 
-    return { user, userSettings };
+  static async retrieve(id: string): Promise<User | null> {
+    try {
+      const userToRetrieve = Object.assign(new User(), { id });
+      const user = await User.get(userToRetrieve);
+
+      if (user.accessToken && user.refreshToken) {
+        try {
+          await user.setTooGoodToGo();
+
+          return user;
+        } catch {
+          // Invalid access and refresh tokens
+        }
+      }
+    } catch {
+      // User not found
+    }
+
+    return null;
+  }
+
+  static async create(id: string, email: string, password: string): Promise<User | null> {
+    const user = Object.assign(new User(), { id });
+
+    try {
+      await user.createTooGoodToGo(email, password);
+      await user.put();
+
+      return user;
+    } catch {
+      // Invalid credentials
+    }
+
+    return null;
   }
 }

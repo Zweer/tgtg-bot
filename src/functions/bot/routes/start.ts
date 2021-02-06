@@ -1,5 +1,4 @@
 import { Composer, Scenes } from 'telegraf';
-import { ItemNotFoundException } from '@aws/dynamodb-data-mapper';
 
 import { User } from '@models/user';
 
@@ -15,24 +14,13 @@ export const startSceneId = 'start-wizard';
 const startWizard = new Scenes.WizardScene<StartWizardContext>(
   startSceneId,
   async (ctx) => {
-    const user: User = await User.get({ id: `${ctx.message.chat.id}` })
-      .catch((error: ItemNotFoundException) => {
-        console.error(error);
-        console.log(error.name);
+    const user = await User.retrieve(`${ctx.message.chat.id}`);
 
-        return null;
-      });
+    if (user) {
+      await ctx.reply(`Welcome back ${user.userInfo.name}`);
 
-    if (user && user.accessToken && user.refreshToken) {
-      try {
-        const { user: userInfo } = await user.setTooGoodToGo();
-
-        await ctx.reply(`Welcome back ${userInfo.name}`);
-
-        return await ctx.scene.leave();
-      } catch {
-        // login expired
-      }
+      // eslint-disable-next-line no-return-await
+      return await ctx.scene.leave();
     }
 
     ctx.scene.session.email = '';
@@ -54,18 +42,9 @@ const startWizard = new Scenes.WizardScene<StartWizardContext>(
       const { email } = ctx.scene.session;
       const password = ctx.message.text;
 
-      const user = Object.assign(new User(), {
-        id: ctx.message.chat.id,
-      });
+      const user = await User.create(`${ctx.message.chat.id}`, email, password);
 
-      try {
-        const { user: userInfo } = await user.createTooGoodToGo(email, password);
-        await user.put();
-
-        await ctx.reply(`Welcome ${userInfo.name}`);
-      } catch {
-        await ctx.reply('Invalid credentials!');
-      }
+      await ctx.reply(user ? `Welcome ${user.userInfo.name}` : 'Invalid credentials!');
 
       // eslint-disable-next-line no-return-await
       return await ctx.scene.leave();
