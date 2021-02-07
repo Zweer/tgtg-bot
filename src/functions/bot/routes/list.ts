@@ -17,5 +17,5 @@ export const listHandler = async (ctx: Context) => {
   const items = await user.tooGoodToGo.listItems();
   const message = itemsListToMessage(items);
 
-  await ctx.replyWithMarkdownV2(message);
+  await ctx.replyWithHTML(message);
 };

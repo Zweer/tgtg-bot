@@ -24,7 +24,7 @@ export const main = async () => {
       user.itemsHash = newHash;
       await user.put();
 
-      await bot.telegram.sendMessage(user.id, itemsListToMessage(items));
+      await bot.telegram.sendMessage(user.id, itemsListToMessage(items), { parse_mode: 'HTML' });
     }
   }
 };
