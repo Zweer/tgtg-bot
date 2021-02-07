@@ -27,6 +27,9 @@ export class User extends AbstractModel {
   @attribute()
   remind: boolean;
 
+  @attribute()
+  itemsHash: string;
+
   tooGoodToGo: TooGoodToGo;
 
   userInfo: RetrieveUserResponseDto;

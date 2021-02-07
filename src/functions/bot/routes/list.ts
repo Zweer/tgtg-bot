@@ -1,6 +1,7 @@
 import { Context } from 'telegraf';
 
 import { User } from '@models/user';
+import { itemsListToMessage } from '@common/bot';
 
 export const listAction = 'list';
 
@@ -14,17 +15,7 @@ export const listHandler = async (ctx: Context) => {
   }
 
   const items = await user.tooGoodToGo.listItems();
+  const message = itemsListToMessage(items);
 
-  const messages = [
-    'Here is the list of your favourite places:',
-    ...items.map((item) => [
-      `\\- ${item.name}`,
-      `  ~${item.value}~ ${item.price} ${item.priceCode}`,
-      // eslint-disable-next-line no-nested-ternary
-      `  ${item.itemsAvailable > 0 ? `${(item.itemsAvailable < 5 ? '*only* ' : '')}${item.itemsAvailable}` : 'nothing'} available`,
-    ]),
-  ]
-    .flat();
-
-  await ctx.replyWithMarkdownV2(messages.join('\n'));
+  await ctx.replyWithMarkdownV2(message);
 };
