@@ -18,7 +18,7 @@ export const listHandler = async (ctx: Context) => {
   const messages = [
     'Here is the list of your favourite places:',
     ...items.map((item) => [
-      `- ${item.name}`,
+      `\\- ${item.name}`,
       `  ~${item.value}~ ${item.price} ${item.priceCode}`,
       // eslint-disable-next-line no-nested-ternary
       `  ${item.itemsAvailable > 0 ? `${(item.itemsAvailable < 5 ? '*only* ' : '')}${item.itemsAvailable}` : 'nothing'} available`,
